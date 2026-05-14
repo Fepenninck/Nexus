@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { authenticator } from 'otplib'
+import * as OTPAuth from 'otpauth'
 import QRCode from 'qrcode'
 import { supabase } from '../supabaseClient'
 
@@ -10,46 +10,36 @@ export default function Setup2FA() {
   const [msg, setMsg] = useState('')
 
   async function generateQR() {
-    // Gera segredo aleatório
-    const newSecret = authenticator.generateSecret()
+    const newSecret = OTPAuth.Secret.fromRandom().base32
     setSecret(newSecret)
 
-    // Obtém usuário logado
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // Cria URL do Google Authenticator
-    const otpUrl = authenticator.keyuri(
-      user.email,
-      'NexusAuth',
-      newSecret
-    )
+    const totp = new OTPAuth.TOTP({
+      issuer: 'NexusBank',
+      label: user.email,
+      secret: OTPAuth.Secret.fromBase32(newSecret)
+    })
 
-    // Gera QR Code
+    const otpUrl = totp.toString()
     const qr = await QRCode.toDataURL(otpUrl)
-
     setQrUrl(qr)
   }
 
   async function confirmSetup() {
-    // Verifica código digitado
-    const valid = authenticator.verify({
-      token: code,
-      secret,
+    const totp = new OTPAuth.TOTP({
+      secret: OTPAuth.Secret.fromBase32(secret)
     })
+
+    const valid = totp.validate({ token: code, window: 1 }) !== null
 
     if (!valid) {
       setMsg('Código inválido. Tente novamente.')
       return
     }
 
-    // Obtém usuário
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // Salva no banco
     await supabase.from('profiles').upsert({
       id: user.id,
       totp_secret: secret,
@@ -63,39 +53,24 @@ export default function Setup2FA() {
     <div>
       <h2>Configurar Autenticação de 2 Fatores</h2>
 
-      <button onClick={generateQR}>
-        Gerar QR Code
-      </button>
+      <button onClick={generateQR}>Gerar QR Code</button>
 
-      <br />
-      <br />
+      <br /><br />
 
       {qrUrl && (
-        <img
-          src={qrUrl}
-          alt="QR Code 2FA"
-          width="200"
-        />
+        <img src={qrUrl} alt="QR Code 2FA" width="200" />
       )}
 
       {qrUrl && (
         <>
-          <p>
-            Escaneie o QR Code no Google Authenticator
-          </p>
-
+          <p>Escaneie o QR Code no Google Authenticator</p>
           <input
             placeholder="Digite o código de 6 dígitos"
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />
-
-          <br />
-          <br />
-
-          <button onClick={confirmSetup}>
-            Confirmar
-          </button>
+          <br /><br />
+          <button onClick={confirmSetup}>Confirmar</button>
         </>
       )}
 
