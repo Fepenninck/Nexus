@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { authenticator } from 'otplib'
+import * as OTPAuth from 'otpauth'
 import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
@@ -10,26 +10,21 @@ export default function Verify2FA() {
   const navigate = useNavigate()
 
   async function verifyCode() {
-    // Obtém usuário logado
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // Busca segredo salvo no banco
     const { data: profile } = await supabase
       .from('profiles')
       .select('totp_secret')
       .eq('id', user.id)
       .single()
 
-    // Verifica código
-    const valid = authenticator.verify({
-      token: code,
-      secret: profile.totp_secret,
+    const totp = new OTPAuth.TOTP({
+      secret: OTPAuth.Secret.fromBase32(profile.totp_secret)
     })
 
+    const valid = totp.validate({ token: code, window: 1 }) !== null
+
     if (valid) {
-      // Login completo
       navigate('/dashboard')
     } else {
       setMsg('Código inválido ou expirado. Tente novamente.')
@@ -40,9 +35,7 @@ export default function Verify2FA() {
     <div>
       <h2>Verificação em 2 Etapas</h2>
 
-      <p>
-        Abra o Google Authenticator e digite o código:
-      </p>
+      <p>Abra o Google Authenticator e digite o código:</p>
 
       <input
         maxLength={6}
@@ -51,12 +44,9 @@ export default function Verify2FA() {
         onChange={(e) => setCode(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
 
-      <button onClick={verifyCode}>
-        Verificar
-      </button>
+      <button onClick={verifyCode}>Verificar</button>
 
       <p>{msg}</p>
     </div>
