@@ -11,14 +11,36 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (form.password !== form.confirm) { setError('Senhas não coincidem'); return }
-    if (form.password.length < 8) { setError('Mínimo 8 caracteres'); return }
+    
+    // Validação de igualdade e tamanho (mínimo 8 caracteres) 
+    if (form.password !== form.confirm) { 
+      setError('As senhas não coincidem!')
+      return 
+    }
+    
+    if (form.password.length < 8) { 
+      setError('A senha deve ter pelo menos 8 caracteres.')
+      return 
+    }
+
     setError('')
     setLoading(true)
-    const { error: err } = await supabase.auth.updateUser({ password: form.password })
+
+    // O Supabase atualiza a senha usando bcrypt + salt internamente 
+    const { error: err } = await supabase.auth.updateUser({ 
+      password: form.password 
+    })
+
     setLoading(false)
-    if (err) { setError(err.message); return }
+
+    if (err) { 
+      // Se o link de 15 min expirou, o sistema retorna erro [cite: 53, 58, 80]
+      setError('Link expirado ou inválido. Solicite outro.')
+      return 
+    }
+
     setSuccess(true)
+    // Redireciona após sucesso [cite: 54]
     setTimeout(() => navigate('/login'), 2000)
   }
 
@@ -31,12 +53,13 @@ export default function ResetPassword() {
 
   return (
     <div style={{ maxWidth: 400, margin: '80px auto', padding: '0 16px' }}>
-      <h2>Nova senha</h2>
+      <h2>Nova Senha</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      
       <form onSubmit={handleSubmit}>
         <input
           type="password"
-          placeholder="Nova senha"
+          placeholder="Nova senha (mín. 8 caracteres)"
           value={form.password}
           onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
           required
@@ -44,14 +67,18 @@ export default function ResetPassword() {
         />
         <input
           type="password"
-          placeholder="Confirmar senha"
+          placeholder="Confirme a nova senha"
           value={form.confirm}
           onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))}
           required
           style={{ width: '100%', padding: 10, marginBottom: 12 }}
         />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Salvando...' : 'Redefinir senha'}
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ width: '100%', padding: 10, cursor: 'pointer' }}
+        >
+          {loading ? 'Salvando...' : 'Alterar senha'}
         </button>
       </form>
     </div>

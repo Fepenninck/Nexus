@@ -12,18 +12,28 @@ export default function ForgotPassword() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Esta é a função que o guia pede para recuperar a senha [cite: 49, 51]
     const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      // O link no email levará o usuário para a sua tela de ResetPassword 
       redirectTo: `${window.location.origin}/reset-password`
     })
+
     setLoading(false)
-    if (err) { setError(err.message); return }
+
+    if (err) { 
+      setError(err.message)
+      return 
+    }
+
+    // Se não deu erro, mostra a mensagem de sucesso
     setSent(true)
   }
 
   if (sent) return (
     <div style={{ textAlign: 'center', padding: '40px' }}>
       <h2>E-mail enviado!</h2>
-      <p>Verifique sua caixa de entrada para redefinir a senha.</p>
+      <p>Se este e-mail estiver cadastrado, você receberá um link em breve.</p> 
       <Link to="/login">Voltar ao login</Link>
     </div>
   )
@@ -31,7 +41,9 @@ export default function ForgotPassword() {
   return (
     <div style={{ maxWidth: 400, margin: '80px auto', padding: '0 16px' }}>
       <h2>Recuperar senha</h2>
+      <p>Digite seu email e enviaremos um link de recuperação.</p> 
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -41,11 +53,14 @@ export default function ForgotPassword() {
           required
           style={{ width: '100%', padding: 10, marginBottom: 12 }}
         />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Enviando...' : 'Enviar link'}
+        <button type="submit" disabled={loading} style={{ width: '100%', padding: 10, cursor: 'pointer' }}>
+          {loading ? 'Enviando...' : 'Enviar link'} 
         </button>
       </form>
-      <p><Link to="/login">← Voltar ao login</Link></p>
+      
+      <p style={{ marginTop: 20 }}>
+        <Link to="/login">← Voltar ao login</Link>
+      </p>
     </div>
   )
 }

@@ -56,3 +56,13 @@ export default function MyData() {
     </div>
   )
 }
+
+
+const { data: { user } } = await supabase.auth.getUser() 
+
+await supabase.from('profiles').upsert({ 
+  id: user.id, 
+  full_name: name,
+  consent_given: true, 
+  consent_date: new Date().toISOString() 
+})
