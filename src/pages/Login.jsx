@@ -12,13 +12,11 @@ export default function Login() {
   const navigate = useNavigate()
 
   async function handleLogin() {
-    // Verifica se a conta está bloqueada
     if (locked) {
       setMsg('Conta bloqueada. Aguarde 5 minutos.')
       return
     }
 
-    // Tenta fazer login
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -28,7 +26,6 @@ export default function Login() {
       const newAttempts = attempts + 1
       setAttempts(newAttempts)
 
-      // Bloqueia após 5 tentativas erradas
       if (newAttempts >= 5) {
         setLocked(true)
 
@@ -41,11 +38,21 @@ export default function Login() {
         setMsg(`Senha errada. Tentativa ${newAttempts} de 5.`)
       }
     } else {
-      // Resetar tentativas
       setAttempts(0)
 
-      // Redireciona para o 2FA
-      navigate('/verify-2fa')
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('totp_enabled')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.totp_enabled) {
+        navigate('/verify-2fa')
+      } else {
+        navigate('/setup-2fa')
+      }
     }
   }
 
