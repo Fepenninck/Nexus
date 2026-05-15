@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as OTPAuth from 'otpauth'
 import QRCode from 'qrcode'
 import { supabase } from '../supabaseClient'
+import { useNavigate } from 'react-router-dom'
 
 export default function Setup2FA() {
   const [qrUrl, setQrUrl] = useState('')
@@ -9,8 +10,10 @@ export default function Setup2FA() {
   const [code, setCode] = useState('')
   const [msg, setMsg] = useState('')
 
+  const navigate = useNavigate()
+
   async function generateQR() {
-    const newSecret = OTPAuth.Secret.fromRandom().base32
+    const newSecret = new OTPAuth.Secret().base32
     setSecret(newSecret)
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -47,6 +50,7 @@ export default function Setup2FA() {
     })
 
     setMsg('2FA ativado com sucesso!')
+    setTimeout(() => navigate('/verify-2fa'), 1500)
   }
 
   return (
