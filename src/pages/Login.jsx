@@ -74,18 +74,17 @@ export default function Login() {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <br />
-      <br />
-
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <br />
-      <br />
+      <div className="login-password-field">
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Link className="forgot-password-link" to="/forgot-password">
+          Esqueci minha senha
+        </Link>
+      </div>
 
       <button onClick={handleLogin} disabled={locked}>
         Entrar
