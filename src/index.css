@@ -141,6 +141,29 @@ button:disabled {
   box-sizing: border-box;
 }
 
+.login-password-field {
+  width: min(360px, calc(100% - 32px));
+  margin: 8px auto 18px;
+  text-align: right;
+}
+
+.login-password-field input {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.forgot-password-link {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
 .password-rules {
   width: min(360px, calc(100% - 32px));
   margin: 4px auto 8px;
