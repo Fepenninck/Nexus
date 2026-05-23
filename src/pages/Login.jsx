@@ -43,6 +43,7 @@ export default function Login() {
       }
     } else {
       setAttempts(0);
+      sessionStorage.removeItem("nexus_2fa_verified");
 
       const {
         data: { user },
@@ -50,11 +51,11 @@ export default function Login() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("totp_enabled")
+        .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (profile?.totp_enabled) {
+      if (profile?.totp_enabled || user.user_metadata?.totp_enabled) {
         navigate("/verify-2fa");
       } else {
         navigate("/setup-2fa");
@@ -63,7 +64,7 @@ export default function Login() {
   }
 
   return (
-    <div>
+    <div className="auth-page">
       <h2>Login</h2>
 
       <input

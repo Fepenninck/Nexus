@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import Navbar from "../components/Navbar";
+import BackButton from "../components/BackButton";
 import { Link } from "react-router-dom";
 
 export default function Dashboard() {
@@ -29,7 +30,10 @@ export default function Dashboard() {
     <>
       <Navbar />
       <div style={{ padding: "32px", maxWidth: "800px", margin: "0 auto" }}>
-        <h1>Bem-vindo, {profile?.full_name || user?.email}!</h1>
+        <BackButton fallback="/bank" />
+        <h1 className="dashboard-title">
+          Bem-vindo, <span>{profile?.full_name || user?.email}</span>!
+        </h1>
 
         <div
           style={{

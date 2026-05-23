@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 
 export default function MyData() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function MyData() {
   const [deleted, setDeleted] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Tem certeza? Essa ação é irreversível.")) return;
+    if (!confirm("Tem certeza? Essa acao e irreversivel.")) return;
     setLoading(true);
     await supabase.auth.signOut();
     setLoading(false);
@@ -19,6 +20,7 @@ export default function MyData() {
   if (deleted)
     return (
       <div style={{ textAlign: "center", padding: "40px" }}>
+        <BackButton fallback="/dashboard" />
         <h2>Dados removidos.</h2>
         <p>Redirecionando...</p>
       </div>
@@ -26,18 +28,21 @@ export default function MyData() {
 
   return (
     <div style={{ maxWidth: 500, margin: "80px auto", padding: "0 16px" }}>
+      <BackButton fallback="/dashboard" />
       <h2>Meus Dados (LGPD)</h2>
       <p style={{ color: "#8892b0", marginBottom: 24 }}>
-        Em conformidade com a Lei 13.709/2018, você tem direito de acessar,
-        corrigir ou solicitar a exclusão dos seus dados pessoais.
+        Em conformidade com a Lei 13.709/2018, voce tem direito de acessar,
+        corrigir ou solicitar a exclusao dos seus dados pessoais.
       </p>
       <div style={{ marginBottom: 24 }}>
         <h3>Dados coletados</h3>
         <ul style={{ color: "#8892b0", marginTop: 8, lineHeight: 2 }}>
-          <li>E-mail (autenticação)</li>
-          <li>Nome completo</li>
+          <li>E-mail (autenticacao)</li>
+          <li>Telefone</li>
+          <li>CPF</li>
           <li>Data de cadastro</li>
-          <li>Preferências de segurança (2FA)</li>
+          <li>Consentimento LGPD</li>
+          <li>Preferencias de seguranca (2FA)</li>
         </ul>
       </div>
       <button
@@ -52,7 +57,7 @@ export default function MyData() {
           cursor: "pointer",
         }}
       >
-        {loading ? "Removendo..." : "Solicitar exclusão dos meus dados"}
+        {loading ? "Removendo..." : "Solicitar exclusao dos meus dados"}
       </button>
     </div>
   );

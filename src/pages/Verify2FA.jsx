@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as OTPAuth from 'otpauth'
 import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
+import BackButton from '../components/BackButton'
 
 export default function Verify2FA() {
   const [code, setCode] = useState('')
@@ -12,30 +13,46 @@ export default function Verify2FA() {
   async function verifyCode() {
     const { data: { user } } = await supabase.auth.getUser()
 
+    if (!user) {
+      navigate('/login')
+      return
+    }
+
     const { data: profile } = await supabase
       .from('profiles')
-      .select('totp_secret')
+      .select('*')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
+
+    const totpEnabled = profile?.totp_enabled || user.user_metadata?.totp_enabled
+    const totpSecret = profile?.totp_secret || user.user_metadata?.totp_secret
+
+    if (!totpEnabled || !totpSecret) {
+      setMsg('2FA nao encontrado. Redirecionando para configurar novamente.')
+      setTimeout(() => navigate('/setup-2fa'), 1200)
+      return
+    }
 
     const totp = new OTPAuth.TOTP({
-      secret: OTPAuth.Secret.fromBase32(profile.totp_secret)
+      secret: OTPAuth.Secret.fromBase32(totpSecret),
     })
 
     const valid = totp.validate({ token: code, window: 1 }) !== null
 
     if (valid) {
-      navigate('/dashboard')
+      sessionStorage.setItem('nexus_2fa_verified', 'true')
+      navigate('/bank')
     } else {
-      setMsg('Código inválido ou expirado. Tente novamente.')
+      setMsg('Codigo invalido ou expirado. Tente novamente.')
     }
   }
 
   return (
     <div>
-      <h2>Verificação em 2 Etapas</h2>
+      <BackButton fallback="/login" />
+      <h2>Verificacao em 2 Etapas</h2>
 
-      <p>Abra o Google Authenticator e digite o código:</p>
+      <p>Abra o Google Authenticator e digite o codigo:</p>
 
       <input
         maxLength={6}

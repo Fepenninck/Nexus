@@ -7,7 +7,9 @@ import ResetPassword from "./pages/ResetPassword";
 import Verify2FA from "./pages/Verify2FA";
 import Setup2FA from "./pages/Setup2FA";
 import MyData from "./pages/MyData";
+import Bank from "./pages/Bank";
 import PrivateRoute from "./components/PrivateRoute";
+import Require2FA from "./components/Require2FA";
 
 export default function App() {
   return (
@@ -20,12 +22,23 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-2fa" element={<Verify2FA />} />
+        <Route path="/store" element={<Navigate to="/bank" replace />} />
 
         <Route
           path="/dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bank"
+          element={
+            <PrivateRoute>
+              <Require2FA>
+                <Bank />
+              </Require2FA>
             </PrivateRoute>
           }
         />
