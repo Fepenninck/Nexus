@@ -5,6 +5,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   async function handleLogout() {
+    sessionStorage.removeItem("nexus_2fa_verified");
     await supabase.auth.signOut();
     navigate("/login");
   }
@@ -21,13 +22,16 @@ export default function Navbar() {
     >
       <span style={{ fontWeight: "bold", fontSize: "1.2rem" }}>NexusAuth</span>
       <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-        <Link to="/dashboard" style={{ color: "white" }}>
+        <Link to="/bank" style={{ color: "white", textDecoration: "none" }}>
+          Banco
+        </Link>
+        <Link to="/dashboard" style={{ color: "white", textDecoration: "none" }}>
           Dashboard
         </Link>
-        <Link to="/setup-2fa" style={{ color: "white" }}>
+        <Link to="/setup-2fa" style={{ color: "white", textDecoration: "none" }}>
           Configurar 2FA
         </Link>
-        <Link to="/my-data" style={{ color: "white" }}>
+        <Link to="/my-data" style={{ color: "white", textDecoration: "none" }}>
           Meus Dados
         </Link>
         <button

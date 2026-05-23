@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import BackButton from "../components/BackButton";
 import { supabase } from "../supabaseClient";
 
 export default function ForgotPassword() {
@@ -26,6 +27,7 @@ export default function ForgotPassword() {
   if (sent)
     return (
       <div style={{ textAlign: "center", padding: "40px" }}>
+        <BackButton fallback="/login" />
         <h2>E-mail enviado!</h2>
         <p>Verifique sua caixa de entrada para redefinir a senha.</p>
         <Link to="/login">Voltar ao login</Link>
@@ -34,6 +36,7 @@ export default function ForgotPassword() {
 
   return (
     <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 16px" }}>
+      <BackButton fallback="/login" />
       <h2>Recuperar senha</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>

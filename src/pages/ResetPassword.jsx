@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 import { supabase } from "../supabaseClient";
 
 export default function ResetPassword() {
@@ -36,6 +37,7 @@ export default function ResetPassword() {
   if (success)
     return (
       <div style={{ textAlign: "center", padding: "40px" }}>
+        <BackButton fallback="/login" />
         <h2>Senha redefinida!</h2>
         <p>Redirecionando para o login...</p>
       </div>
@@ -43,6 +45,7 @@ export default function ResetPassword() {
 
   return (
     <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 16px" }}>
+      <BackButton fallback="/login" />
       <h2>Nova senha</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
