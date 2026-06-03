@@ -162,14 +162,14 @@ py -m uvicorn app.main:app --reload
 
 | # | Requisito | Status |
 |---|-----------|--------|
-| 1 | Autenticação e Gestão de Credenciais | 🔄 Em andamento |
-| 2 | Recuperação de Senha | 🔄 Em andamento |
-| 3 | Criptografia e Comunicação Segura | 🔄 Em andamento |
-| 4 | Conformidade com a LGPD | 🔄 Em andamento |
-| 5 | Auditoria e Logs | 🔄 Em andamento |
-| 6 | Documentação Técnico-Científica | 🔄 Em andamento |
-| 7 | Resumo Científico | 🔄 Em andamento |
-| 8 | Pôster Científico e Apresentação | 🔄 Em andamento |
+| 1 | Autenticação e Gestão de Credenciais | FEITO |
+| 2 | Recuperação de Senha | FEITO |
+| 3 | Criptografia e Comunicação Segura | FEITO |
+| 4 | Conformidade com a LGPD | FEITO |
+| 5 | Auditoria e Logs (supabase) | FEITO |
+| 6 | Documentação Técnico-Científica | FEITO |
+| 7 | Resumo Científico | FEITO |
+| 8 | Pôster Científico e Apresentação | FEITO |
 
 ---
 
